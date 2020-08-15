@@ -63,3 +63,11 @@ module "public_ip" {
   resource_type    = "public_ip"
   resource_group   = "${module.resource_group.resource_group_name}"
 }
+
+module "vm" {
+  source           = "../../modules/vm"
+  location         = "${var.location}"
+  resource_group   = "${module.resource_group.resource_group_name}"
+  subnet_id        = "${module.network.subnet_id_test}"
+  public_ip        = "${module.public_ip.public_ip_address_id}"
+}
