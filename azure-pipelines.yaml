@@ -9,11 +9,44 @@ stages:
       name: Hosted Ubuntu 1604
     steps:
     # Needed for Terraform VM deployment
-    # - task: InstallSSHKey@0
-    #   inputs:
-    #     knownHostsEntry: 'KNOWN_HOSTS_STRING'
-    #     sshPublicKey: 'PUBLIC_KEY'
-    #     sshKeySecureFile: 'id_rsa'
+    - task: InstallSSHKey@0
+      displayName: 'SSH to VM'
+      inputs:
+        knownHostsEntry: '$(Parameters.hostName)'
+        sshPublicKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDTBrMakLPGyAt8zrhkwSJ9yQa8AVR0zgT3Wp0fhb2ebh5DEdom51caP65MCrfVlWC7WZqEu07+Ju/vg/qmQevque9sAP9mJFiqVOzoc9a5Ow+nboWGe3YRgAotzuU2fIjRbF1jCX6CFJaAbduCOCcdlCS0zFnX+32xD4slDdaAfDljvvKMAGN1Nmphw86jHZrxG+8LvY4mNfdc2rqdpLrVAJ8mK4ZoCE+sS3UDnVe8Xij0r4DpEfPbS8PFfh2y+dcl7xwNLVrvICT8tQdtf5fWlLBKLB3MucQ27gb8RhsWgnaP3Eojge2cPdZ5rCmbG24c/i4pQqkD9OOPusXQWFXR'
+        sshKeySecureFile: 'id_rsa'
+    - task: TerraformTaskV1@0
+      displayName: 'Use Terraform latest'
+      inputs:
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+    - task: TerraformTaskV2@0
+      displayName: 'Init Process'
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+        backendServiceArm: 'quality'
+        backendAzureRmResourceGroupName: 'Udacity_Assignment3'
+        backendAzureRmStorageAccountName: 'tstate31350'
+        backendAzureRmKey: 'terraform.tfstate'
+        backendAzureRmContainerName: tstate
+    - task: TerraformTaskV3@0
+      displayName: 'Validae Process'
+      inputs:
+        command: 'validate'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+    - task: TerraformTaskV4@0
+      displayName: 'Apply Process'
+      inputs:
+        command: 'apply'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+    - task: ArchiveFiles@2
+      displayName: 'Archive Automated Tests'
+      inputs:
+        rootFolderOrFile: 'automatedtesting'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-automatedtests.zip'
     - task: ArchiveFiles@2
       displayName: 'Archive FakeRestAPI'
       inputs:
@@ -24,6 +57,9 @@ stages:
     - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip
       displayName: 'Upload Package'
       artifact: drop-fakerestapi
+    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-automatedtests.zip
+      displayName: 'Upload Automatedtests'
+      artifact: drop-automatedtests
 - stage:
   jobs:
   - deployment: FakeRestAPI
@@ -37,8 +73,8 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App'
             inputs:
-              azureSubscription: '041ff511-bfa6-4e8a-8808-7a3fcaf13c96'
-              appName: 'Assignment_3'
+              azureSubscription: 'Free Trial'
+              appName: 'Assignment3-AppService'
               appType: webApp
               package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
   # - deployment: VMDeploy
