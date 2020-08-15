@@ -19,7 +19,7 @@ stages:
       displayName: 'Use Terraform latest'
       inputs:
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-    - task: TerraformTaskV2@0
+    - task: TerraformCLI@0
       displayName: 'Init Process'
       inputs:
         provider: 'azurerm'
@@ -30,12 +30,12 @@ stages:
         backendAzureRmStorageAccountName: 'tstate31350'
         backendAzureRmKey: 'terraform.tfstate'
         backendAzureRmContainerName: tstate
-    - task: TerraformTaskV3@0
+    - task: TerraformCLI@0
       displayName: 'Validae Process'
       inputs:
         command: 'validate'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-    - task: TerraformTaskV4@0
+    - task: TerraformCLI@0
       displayName: 'Apply Process'
       inputs:
         command: 'apply'
