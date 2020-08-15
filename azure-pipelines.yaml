@@ -14,7 +14,7 @@ stages:
       inputs:
         knownHostsEntry: '13.90.29.186'
         sshPublicKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDTBrMakLPGyAt8zrhkwSJ9yQa8AVR0zgT3Wp0fhb2ebh5DEdom51caP65MCrfVlWC7WZqEu07+Ju/vg/qmQevque9sAP9mJFiqVOzoc9a5Ow+nboWGe3YRgAotzuU2fIjRbF1jCX6CFJaAbduCOCcdlCS0zFnX+32xD4slDdaAfDljvvKMAGN1Nmphw86jHZrxG+8LvY4mNfdc2rqdpLrVAJ8mK4ZoCE+sS3UDnVe8Xij0r4DpEfPbS8PFfh2y+dcl7xwNLVrvICT8tQdtf5fWlLBKLB3MucQ27gb8RhsWgnaP3Eojge2cPdZ5rCmbG24c/i4pQqkD9OOPusXQWFXR'
-        sshKeySecureFile: 'id_rsa.pub'
+        sshKeySecureFile: 'id_rsa'
     - task: TerraformTaskV1@0
       displayName: 'Use Terraform latest'
       inputs:
